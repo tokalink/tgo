@@ -1,0 +1,22 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/main.exe ."
+  bin = ".\\tmp\\main.exe"
+  args_bin = ["serve"]
+  delay = 500
+  exclude_dir = ["data", "tmp", "vendor", ".git"]
+  exclude_regex = ["_test\\.go$"]
+  include_ext = ["go", "proto", "yaml", "env", "html", "css", "js"]
+  stop_on_error = true
+
+[color]
+  app = ""
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  time = true

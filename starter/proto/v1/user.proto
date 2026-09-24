@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "github.com/tgo-framework/tgo/starter/proto/v1/userv1;userv1";
+
+service UserService {
+  rpc GetProfile (GetProfileRequest) returns (GetProfileResponse);
+}
+
+message GetProfileRequest {
+  string user_id = 1;
+}
+
+message GetProfileResponse {
+  string user_id = 1;
+  string name = 2;
+  string email = 3;
+  string role = 4;
+  string tenant_slug = 5;
+}

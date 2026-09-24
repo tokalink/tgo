@@ -1,0 +1,52 @@
+package main
+
+import (
+	"log"
+
+	"github.com/spf13/cobra"
+	"github.com/tgo-framework/tgo/cmd/craft/commands"
+)
+
+func main() {
+	rootCmd := &cobra.Command{
+		Use:   "craft",
+		Short: "TGo Craft CLI",
+		Long:  "Craft is the command line developer tool for TGo to generate code, run migrations, and manage tenants.",
+	}
+
+	// Direct root commands
+	rootCmd.AddCommand(commands.ServeCmd)
+	rootCmd.AddCommand(commands.MigrateCmd)
+	rootCmd.AddCommand(commands.TenantCmd)
+	rootCmd.AddCommand(commands.TenantCreateRootCmd)
+	rootCmd.AddCommand(commands.MakeCmd)
+
+	// Aliases for artisan-style colon syntax (craft make:model, craft make:service, etc.)
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "make:model <Name>",
+		Short: "Generate a new model struct and repository",
+		Args:  cobra.ExactArgs(1),
+		Run:   commands.MakeModelCmd.Run,
+	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "make:service <Name>",
+		Short: "Generate a new business logic service action",
+		Args:  cobra.ExactArgs(1),
+		Run:   commands.MakeServiceCmd.Run,
+	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "make:handler <Name>",
+		Short: "Generate a new RPC & HTTP controller handler",
+		Args:  cobra.ExactArgs(1),
+		Run:   commands.MakeHandlerCmd.Run,
+	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "make:frontend",
+		Short: "Generate unified frontend starter (HTML/CSS/JS + Wails ready)",
+		Run:   commands.MakeFrontendCmd.Run,
+	})
+
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
+	}
+}

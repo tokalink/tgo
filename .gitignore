@@ -1,0 +1,28 @@
+# Binaries and build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+tmp/
+
+# SQLite databases & tenant data
+*.db
+*.db-journal
+*.sqlite
+data/tenants/*.db
+
+# Environment and local configs
+.env
+.env.local
+*.local
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
