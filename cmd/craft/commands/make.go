@@ -6,19 +6,24 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
+var (
+	makeModelWithMigration bool
+)
+
 var MakeCmd = &cobra.Command{
 	Use:   "make",
-	Short: "Scaffold models, services, handlers, and frontend boilerplate",
+	Short: "Scaffold models, migrations, services, handlers, and frontend boilerplate",
 }
 
-// craft make:model <Name>
+// craft make:model <Name> [-m / --migration]
 var MakeModelCmd = &cobra.Command{
 	Use:   "model <Name>",
-	Short: "Generate a new model struct and repository",
+	Short: "Generate a new model struct and repository (use -m to also generate migration)",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
@@ -73,7 +78,59 @@ func (r *%sRepository) FindByID(ctx context.Context, id string) (*%s, error) {
 			log.Fatalf("[Craft] Failed to write model file: %v", err)
 		}
 		log.Printf("[Craft] Model created: %s\n", filePath)
+
+		// If -m / --migration is provided, generate corresponding migration files
+		if makeModelWithMigration {
+			tableName := snakeName + "s"
+			migrationName := fmt.Sprintf("create_%s_table", tableName)
+			createMigration(migrationName, tableName)
+		}
 	},
+}
+
+// craft make:migration <Name>
+var MakeMigrationCmd = &cobra.Command{
+	Use:   "migration <name>",
+	Short: "Generate a new SQL migration up and down pair",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		name := toSnakeCase(args[0])
+		tableName := strings.TrimSuffix(strings.TrimPrefix(name, "create_"), "_table")
+		createMigration(name, tableName)
+	},
+}
+
+func createMigration(name, tableName string) {
+	targetDir := filepath.Join("database", "migrations")
+	_ = os.MkdirAll(targetDir, 0755)
+
+	ts := time.Now().Format("20060102150405")
+	upFileName := fmt.Sprintf("%s_%s.up.sql", ts, name)
+	downFileName := fmt.Sprintf("%s_%s.down.sql", ts, name)
+
+	upPath := filepath.Join(targetDir, upFileName)
+	downPath := filepath.Join(targetDir, downFileName)
+
+	upContent := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`, tableName)
+
+	downContent := fmt.Sprintf(`DROP TABLE IF EXISTS %s;
+`, tableName)
+
+	if err := os.WriteFile(upPath, []byte(upContent), 0644); err != nil {
+		log.Fatalf("[Craft] Failed to write migration UP file: %v", err)
+	}
+	if err := os.WriteFile(downPath, []byte(downContent), 0644); err != nil {
+		log.Fatalf("[Craft] Failed to write migration DOWN file: %v", err)
+	}
+
+	log.Printf("[Craft] Migration created: %s\n", upPath)
+	log.Printf("[Craft] Migration created: %s\n", downPath)
 }
 
 // craft make:service <Name>
@@ -264,7 +321,9 @@ func toSnakeCase(s string) string {
 }
 
 func init() {
+	MakeModelCmd.Flags().BoolVarP(&makeModelWithMigration, "migration", "m", false, "Generate a migration file for the model")
 	MakeCmd.AddCommand(MakeModelCmd)
+	MakeCmd.AddCommand(MakeMigrationCmd)
 	MakeCmd.AddCommand(MakeServiceCmd)
 	MakeCmd.AddCommand(MakeHandlerCmd)
 	MakeCmd.AddCommand(MakeFrontendCmd)

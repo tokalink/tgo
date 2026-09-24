@@ -27,12 +27,23 @@ func main() {
 	rootCmd.AddCommand(commands.MakeCmd)
 
 	// Aliases for artisan-style colon syntax
-	rootCmd.AddCommand(&cobra.Command{
+	makeModelAlias := &cobra.Command{
 		Use:   "make:model <Name>",
 		Short: "Generate a new model struct and repository",
 		Args:  cobra.ExactArgs(1),
 		Run:   commands.MakeModelCmd.Run,
-	})
+	}
+	makeModelAlias.Flags().AddFlagSet(commands.MakeModelCmd.Flags())
+	rootCmd.AddCommand(makeModelAlias)
+
+	makeMigrationAlias := &cobra.Command{
+		Use:   "make:migration <Name>",
+		Short: "Generate a new SQL migration up and down pair",
+		Args:  cobra.ExactArgs(1),
+		Run:   commands.MakeMigrationCmd.Run,
+	}
+	rootCmd.AddCommand(makeMigrationAlias)
+
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "make:service <Name>",
 		Short: "Generate a new business logic service action",
