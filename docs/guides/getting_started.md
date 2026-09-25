@@ -98,8 +98,13 @@ craft make:service RegisterUser
 
 ### C. Membuat Controller Handler
 ```bash
-# Buat UserHandler
+# Buat UserHandler biasa
 craft make:handler UserHandler
+
+# Atau buat CRUD Dashboard instan (CRUDBooster-Style):
+craft make:booster Product
+# atau
+craft make:crud Product
 ```
 
 ### D. Menjalankan Migrasi Database

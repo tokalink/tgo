@@ -57,6 +57,18 @@ func main() {
 		Short: "Generate unified frontend starter (HTML/CSS/JS + Wails ready)",
 		Run:   commands.MakeFrontendCmd.Run,
 	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "make:booster <Name>",
+		Short: "Generate a declarative CRUDBooster-style admin controller",
+		Args:  cobra.ExactArgs(1),
+		Run:   commands.MakeBoosterCmd.Run,
+	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "make:crud <Name>",
+		Short: "Alias for make:booster to scaffold instant CRUD modules",
+		Args:  cobra.ExactArgs(1),
+		Run:   commands.MakeBoosterCmd.Run,
+	})
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)

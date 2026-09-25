@@ -70,6 +70,8 @@ Buka browser di **`http://localhost:8080`**.
 | `craft make:migration <Name>` | Membuat file migrasi SQL pair (`up.sql` dan `down.sql`) |
 | `craft make:service <Name>` | Membuat action business logic domain service |
 | `craft make:handler <Name>` | Membuat controller handler HTTP & RPC |
+| `craft make:booster <Name>` | Scaffold controller CRUD Dashboard instan (CRUDBooster style: Grid & Form) |
+| `craft make:crud <Name>` | Alias untuk `make:booster` |
 | `craft make:frontend` | Men-generate starter frontend modern (HTML/CSS/JS) |
 | `craft migrate` | Menjalankan migrasi database ke schema aktif |
 | `craft migrate:tenant --tenant=all` | Menjalankan migrasi ke seluruh schema tenant |
