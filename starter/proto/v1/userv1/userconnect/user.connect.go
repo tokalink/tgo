@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	userv1 "github.com/tgo-framework/tgo/starter/proto/v1/userv1"
+	userv1 "github.com/tokalink/tgo/starter/proto/v1/userv1"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
 )
 
 type PostgresAdapter struct {

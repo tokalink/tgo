@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
 )
 
 // NewLoggingInterceptor returns a ConnectRPC unary interceptor for logging RPC calls.

@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/tgo-framework/tgo/pkg/app"
-	"github.com/tgo-framework/tgo/pkg/config"
-	"github.com/tgo-framework/tgo/starter/app/handlers"
-	"github.com/tgo-framework/tgo/starter/proto/v1/userv1/userconnect"
+	"github.com/tokalink/tgo/pkg/app"
+	"github.com/tokalink/tgo/pkg/config"
+	"github.com/tokalink/tgo/starter/app/handlers"
+	"github.com/tokalink/tgo/starter/proto/v1/userv1/userconnect"
 )
 
 func main() {

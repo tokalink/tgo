@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
 )
 
 func TestTenantSlugValidation(t *testing.T) {

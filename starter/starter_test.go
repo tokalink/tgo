@@ -9,11 +9,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/tgo-framework/tgo/pkg/app"
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
-	"github.com/tgo-framework/tgo/starter/app/handlers"
-	userv1 "github.com/tgo-framework/tgo/starter/proto/v1/userv1"
-	"github.com/tgo-framework/tgo/starter/proto/v1/userv1/userconnect"
+	"github.com/tokalink/tgo/pkg/app"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
+	"github.com/tokalink/tgo/starter/app/handlers"
+	userv1 "github.com/tokalink/tgo/starter/proto/v1/userv1"
+	"github.com/tokalink/tgo/starter/proto/v1/userv1/userconnect"
 	"google.golang.org/protobuf/proto"
 )
 

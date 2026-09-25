@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tgo-framework/tgo/pkg/transport/inmemory"
-	"github.com/tgo-framework/tgo/pkg/transport/welcome"
+	"github.com/tokalink/tgo/pkg/transport/inmemory"
+	"github.com/tokalink/tgo/pkg/transport/welcome"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
