@@ -262,12 +262,18 @@ craft migrate                  # Run database migrations
 		gitCmd.Dir = targetDir
 		_ = gitCmd.Run()
 
+		// 11. Run go mod tidy inside the new project directory
+		fmt.Println("📦 Resolving dependencies with 'go mod tidy'...")
+		tidyCmd := exec.Command("go", "mod", "tidy")
+		tidyCmd.Dir = targetDir
+		tidyCmd.Env = append(os.Environ(), "GOPROXY=direct")
+		_ = tidyCmd.Run()
+
 		fmt.Println("✅ Project scaffolded successfully with a fresh Git repository!")
 		fmt.Printf("\nNext steps:\n")
 		if projectName != "." {
 			fmt.Printf("  cd %s\n", projectName)
 		}
-		fmt.Println("  go mod tidy")
 		fmt.Println("  go run main.go")
 		fmt.Printf("\nHappy coding with ⚡ TGo!\n")
 	},
