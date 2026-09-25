@@ -42,7 +42,10 @@ var NewCmd = &cobra.Command{
 			}
 		}
 
-		fmt.Printf("🚀 Scaffolding new TGo project: %s (%s mode)...\n", projectName, newAppMode)
+		moduleName := filepath.Base(projectName)
+		moduleName = strings.ToLower(strings.ReplaceAll(moduleName, " ", "-"))
+
+		fmt.Printf("🚀 Scaffolding new TGo project: %s (%s mode)...\n", moduleName, newAppMode)
 
 		// 1. Create directory layout
 		dirs := []string{
@@ -64,15 +67,16 @@ var NewCmd = &cobra.Command{
 go 1.25.3
 
 require (
-	github.com/tokalink/tgo latest
+	github.com/tokalink/tgo v0.1.1
 )
-`, projectName)
+`, moduleName)
 		_ = os.WriteFile(filepath.Join(targetDir, "go.mod"), []byte(goModContent), 0644)
 
 		// 3. Generate main.go
 		mainContent := fmt.Sprintf(`package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -92,19 +96,23 @@ func main() {
 	application.Server().Register("/api/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tenant := middleware.GetTenant(r.Context())
 		if tenant == "" {
-			tenant = "default"
+			tenant = "public"
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte("{\"status\":\"ok\",\"app\":\"%s\",\"tenant\":\"" + tenant + "\"}"))
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"status": "ok",
+			"app":    "%s",
+			"tenant": tenant,
+		})
 	}))
 
 	// 4. Run Application Server (ConnectRPC + Native HTTP/2)
-	log.Printf("⚡ [%%s] Running on http://localhost:%%s (Multi-Tenant & ConnectRPC Ready)\n", cfg.App.Name, cfg.App.Port)
+	log.Printf("⚡ [%%s] Running on http://localhost:%%s (ConnectRPC & Multi-Tenant Ready)\n", cfg.App.Name, cfg.App.Port)
 	if err := application.Run(); err != nil {
 		log.Fatalf("Server terminated: %%v", err)
 	}
 }
-`, projectName)
+`, moduleName)
 		_ = os.WriteFile(filepath.Join(targetDir, "main.go"), []byte(mainContent), 0644)
 
 		// 4. Generate config/app.yaml
