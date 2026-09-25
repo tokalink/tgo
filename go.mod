@@ -1,4 +1,4 @@
-module github.com/tgo-framework/tgo
+module github.com/tokalink/tgo
 
 go 1.25.3
 

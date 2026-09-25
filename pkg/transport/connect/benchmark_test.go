@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/tgo-framework/tgo/starter/app/handlers"
-	userv1 "github.com/tgo-framework/tgo/starter/proto/v1/userv1"
-	"github.com/tgo-framework/tgo/starter/proto/v1/userv1/userconnect"
+	"github.com/tokalink/tgo/starter/app/handlers"
+	userv1 "github.com/tokalink/tgo/starter/proto/v1/userv1"
+	"github.com/tokalink/tgo/starter/proto/v1/userv1/userconnect"
 )
 
 func BenchmarkInMemoryInvoker_Proto(b *testing.B) {

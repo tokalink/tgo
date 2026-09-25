@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/tgo-framework/tgo/pkg/app"
-	"github.com/tgo-framework/tgo/starter/app/handlers"
-	"github.com/tgo-framework/tgo/starter/proto/v1/userv1/userconnect"
+	"github.com/tokalink/tgo/pkg/app"
+	"github.com/tokalink/tgo/starter/app/handlers"
+	"github.com/tokalink/tgo/starter/proto/v1/userv1/userconnect"
 )
 
 var (

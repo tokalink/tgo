@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"connectrpc.com/connect"
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
-	userv1 "github.com/tgo-framework/tgo/starter/proto/v1/userv1"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
+	userv1 "github.com/tokalink/tgo/starter/proto/v1/userv1"
 )
 
 // UserHandler implements the ConnectRPC UserServiceHandler.

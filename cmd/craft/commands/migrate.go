@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/tgo-framework/tgo/pkg/database"
+	"github.com/tokalink/tgo/pkg/database"
 )
 
 var MigrateCmd = &cobra.Command{

@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/tgo-framework/tgo/pkg/transport/connect"
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
+	"github.com/tokalink/tgo/pkg/transport/connect"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
 )
 
 // App is the main application container for TGo

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/tgo-framework/tgo/pkg/transport/middleware"
+	"github.com/tokalink/tgo/pkg/transport/middleware"
 )
 
 type DashboardHandler struct{}

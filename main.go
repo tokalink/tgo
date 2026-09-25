@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tgo-framework/tgo/cmd/craft/commands"
+	"github.com/tokalink/tgo/cmd/craft/commands"
 )
 
 func main() {

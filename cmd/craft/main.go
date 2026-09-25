@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/tgo-framework/tgo/cmd/craft/commands"
+	"github.com/tokalink/tgo/cmd/craft/commands"
 )
 
 func main() {
@@ -15,6 +15,7 @@ func main() {
 	}
 
 	// Direct root commands
+	rootCmd.AddCommand(commands.NewCmd)
 	rootCmd.AddCommand(commands.ServeCmd)
 	rootCmd.AddCommand(commands.MigrateCmd)
 	rootCmd.AddCommand(commands.TenantCmd)

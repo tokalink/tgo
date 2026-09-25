@@ -39,7 +39,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/tgo-framework/tgo/pkg/database"
+	"github.com/tokalink/tgo/pkg/database"
 )
 
 // %s represents the entity model
@@ -152,7 +152,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tgo-framework/tgo/pkg/database"
+	"github.com/tokalink/tgo/pkg/database"
 )
 
 // %sAction encapsulates domain business logic
