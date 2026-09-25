@@ -21,7 +21,11 @@ func main() {
 	path, handler := userconnect.NewUserServiceHandler(userHandler)
 	application.Server().Register(path, handler)
 
-	// 4. Run the application (blocks until exit)
+	// 4. Register REST Endpoints for Demo App
+	application.Server().Register("/api/auth/login", handlers.NewAuthHandler())
+	application.Server().Register("/api/dashboard/stats", handlers.NewDashboardHandler())
+
+	// 5. Run the application (blocks until exit)
 	if err := application.Run(); err != nil {
 		log.Fatalf("Application failed: %v", err)
 	}

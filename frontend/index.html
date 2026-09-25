@@ -4,25 +4,443 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TGo App</title>
+  <title>TGo Enterprise Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
   <div id="app">
-    <header class="navbar">
-      <div class="logo">⚡ TGo Framework1111</div>
-      <div class="badge" id="tenant-badge">Tenant: default</div>
-    </header>
-    <main class="hero">
-      <h1>Modern Go Cloud & Desktop Architecture</h1>
-      <p class="subtitle">Unified ConnectRPC, Native Multi-Tenancy & Wails In-Memory IPC</p>
-      <div class="card">
-        <button id="btn-fetch" class="primary-btn">Fetch Profile via RPC</button>
-        <pre id="output">Click button to call backend...</pre>
+    <!-- ================= AUTH VIEW ================= -->
+    <div id="login-view" class="view auth-container">
+      <div class="auth-card glass-panel">
+        <div class="auth-header">
+          <div class="brand-badge">
+            <span class="bolt">⚡</span> TGo Cloud
+          </div>
+          <h1>Welcome Back</h1>
+          <p class="subtitle">Sign in to your high-performance multi-tenant workspace</p>
+        </div>
+
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label for="tenant-select">Tenant Organization</label>
+            <select id="tenant-select" class="form-control">
+              <option value="acme_corp">🏢 Acme Corporation (tenant_acme_corp)</option>
+              <option value="enterprise_client">🏛️ Enterprise Global (tenant_enterprise_client)</option>
+              <option value="tokalink_saas">🚀 Tokalink SaaS (tenant_tokalink_saas)</option>
+              <option value="fintech_ltd">💎 FinTech Labs (tenant_fintech_ltd)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="email-input">Email Address</label>
+            <input type="email" id="email-input" class="form-control" placeholder="admin@enterprise.com" value="alex.chen@acme.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password-input">Password</label>
+            <input type="password" id="password-input" class="form-control" placeholder="••••••••••••" value="tgo-demo-password" required />
+          </div>
+
+          <div class="quick-fill-section">
+            <span class="quick-label">Quick Demo Login:</span>
+            <div class="quick-tags">
+              <button type="button" class="quick-btn" data-tenant="acme_corp" data-email="alex.chen@acme.com">Acme Admin</button>
+              <button type="button" class="quick-btn" data-tenant="tokalink_saas" data-email="dev@tokalink.com">Tokalink Dev</button>
+              <button type="button" class="quick-btn" data-tenant="fintech_ltd" data-email="security@fintech.io">FinTech Security</button>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-login" class="btn-primary">
+            <span class="btn-text">Sign In to Dashboard</span>
+            <span class="spinner hidden"></span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <span>TGo Framework v1.0 • ConnectRPC & Multi-Tenant Native</span>
+        </div>
       </div>
-    </main>
+    </div>
+
+    <!-- ================= DASHBOARD VIEW ================= -->
+    <div id="dashboard-view" class="view dashboard-container hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar glass-panel">
+        <div class="sidebar-header">
+          <div class="brand">
+            <span class="logo-icon">⚡</span>
+            <div class="brand-text">
+              <span class="brand-name">TGo Enterprise</span>
+              <span class="brand-version">v1.0 Go Core</span>
+            </div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section-title">MAIN NAVIGATION</div>
+          <button class="nav-item active" data-tab="overview">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-item" data-tab="tenants">
+            <span class="nav-icon">🏢</span>
+            <span>Tenants & Isolation</span>
+          </button>
+          <button class="nav-item" data-tab="rpc">
+            <span class="nav-icon">⚡</span>
+            <span>ConnectRPC Studio</span>
+          </button>
+          <button class="nav-item" data-tab="team">
+            <span class="nav-icon">👥</span>
+            <span>Team Members</span>
+          </button>
+          <button class="nav-item" data-tab="database">
+            <span class="nav-icon">🗄️</span>
+            <span>Schema Migrations</span>
+          </button>
+
+          <div class="nav-section-title">SYSTEM</div>
+          <button class="nav-item" data-tab="settings">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-profile-pill">
+            <div class="user-avatar" id="user-avatar">AC</div>
+            <div class="user-meta">
+              <div class="user-name" id="user-name-display">Alex Chen</div>
+              <div class="user-role" id="user-role-display">Administrator</div>
+            </div>
+            <button id="btn-logout" class="btn-logout" title="Sign Out">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT WRAPPER -->
+      <div class="main-wrapper">
+        <!-- TOP NAVBAR -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <div class="breadcrumb">
+              <span>Home</span>
+              <span class="slash">/</span>
+              <span id="breadcrumb-current">Dashboard Overview</span>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <div class="tenant-switcher">
+              <span class="switcher-label">Active Tenant:</span>
+              <select id="active-tenant-switch" class="top-tenant-select">
+                <option value="acme_corp">🏢 acme_corp</option>
+                <option value="enterprise_client">🏛️ enterprise_client</option>
+                <option value="tokalink_saas">🚀 tokalink_saas</option>
+                <option value="fintech_ltd">💎 fintech_ltd</option>
+              </select>
+            </div>
+
+            <div class="latency-badge" title="ConnectRPC & DB Roundtrip">
+              <span class="status-dot"></span>
+              <span id="top-latency">0.4 ms (In-Memory IPC)</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- DASHBOARD CONTENT TABS -->
+        <main class="content-area">
+          <!-- TAB: OVERVIEW -->
+          <div id="tab-overview" class="tab-content active">
+            <!-- STATS CARDS -->
+            <div class="stats-grid">
+              <div class="stat-card glass-panel">
+                <div class="stat-icon revenue-bg">💰</div>
+                <div class="stat-info">
+                  <span class="stat-label">Tenant ARR Revenue</span>
+                  <div class="stat-value" id="stat-revenue">$128,450.00</div>
+                  <div class="stat-sub positive">↑ +14.2% vs last month</div>
+                </div>
+              </div>
+
+              <div class="stat-card glass-panel">
+                <div class="stat-icon users-bg">👥</div>
+                <div class="stat-info">
+                  <span class="stat-label">Active Users</span>
+                  <div class="stat-value" id="stat-users">2,840</div>
+                  <div class="stat-sub positive">↑ +8.4% growth</div>
+                </div>
+              </div>
+
+              <div class="stat-card glass-panel">
+                <div class="stat-icon rpc-bg">⚡</div>
+                <div class="stat-info">
+                  <span class="stat-label">RPC Throughput</span>
+                  <div class="stat-value" id="stat-throughput">172,500 req/s</div>
+                  <div class="stat-sub neutral">ConnectRPC Protocol</div>
+                </div>
+              </div>
+
+              <div class="stat-card glass-panel">
+                <div class="stat-icon schema-bg">🔒</div>
+                <div class="stat-info">
+                  <span class="stat-label">Active DB Isolation</span>
+                  <div class="stat-value highlight" id="stat-schema">tenant_acme_corp</div>
+                  <div class="stat-sub neutral">PostgreSQL Schema Isolation</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DASHBOARD GRID: RPC TESTER & RECENT EVENTS -->
+            <div class="dashboard-grid">
+              <!-- RPC TESTER WIDGET -->
+              <div class="grid-card glass-panel rpc-studio-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <span class="pulse-icon">⚡</span>
+                    <h3>Live ConnectRPC Invocation</h3>
+                  </div>
+                  <span class="tag-pill">HTTP/2 • Protobuf • JSON</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-desc">Execute an in-memory or HTTP/2 RPC call against <code>user.v1.UserService/GetProfile</code> with your authenticated tenant context.</p>
+                  
+                  <div class="rpc-controls">
+                    <div class="rpc-input-group">
+                      <span class="input-prefix">User ID:</span>
+                      <input type="text" id="rpc-user-id" class="rpc-input" value="usr_frontend_demo" />
+                    </div>
+                    <button id="btn-call-rpc" class="btn-action">
+                      <span>Execute RPC</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </button>
+                  </div>
+
+                  <div class="code-terminal">
+                    <div class="terminal-bar">
+                      <span class="terminal-dot red"></span>
+                      <span class="terminal-dot yellow"></span>
+                      <span class="terminal-dot green"></span>
+                      <span class="terminal-title">Response Output (JSON-RPC)</span>
+                      <span class="execution-time" id="rpc-time">Ready</span>
+                    </div>
+                    <pre id="rpc-result"><code>{
+  "status": "Ready",
+  "message": "Click 'Execute RPC' to dispatch ConnectRPC request."
+}</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RECENT EVENTS TABLE -->
+              <div class="grid-card glass-panel events-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <span class="pulse-icon">📋</span>
+                    <h3>Tenant Activity Log</h3>
+                  </div>
+                  <button id="btn-refresh-stats" class="btn-icon-small" title="Refresh Data">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="custom-table" id="events-table">
+                      <thead>
+                        <tr>
+                          <th>Event ID</th>
+                          <th>Action</th>
+                          <th>Tenant Scope</th>
+                          <th>Time</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="events-tbody">
+                        <tr>
+                          <td colspan="5" class="text-center">Loading tenant activity...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: TENANTS -->
+          <div id="tab-tenants" class="tab-content">
+            <div class="grid-card glass-panel">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="pulse-icon">🏢</span>
+                  <h3>Multi-Tenant Architecture & Schema Isolation</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="card-desc">TGo provides complete architectural isolation out of the box. Each tenant maps dynamically via middleware to its own PostgreSQL schema (or SQLite file for desktop/embedded mode).</p>
+                <div class="architecture-flow">
+                  <div class="flow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-content">
+                      <strong>Request Ingestion</strong>
+                      <p>Header <code>X-Tenant-Slug</code> or JWT Claim identified by Middleware</p>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">➔</div>
+                  <div class="flow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-content">
+                      <strong>Schema Search Path</strong>
+                      <p>DB connection pool executes <code>SET search_path TO tenant_{slug}</code></p>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">➔</div>
+                  <div class="flow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-content">
+                      <strong>Zero Data Bleed</strong>
+                      <p>All queries, migrations, and gRPC calls operate strictly in tenant boundary</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tenant-cards-list">
+                  <div class="tenant-box">
+                    <h4>🏢 Acme Corporation</h4>
+                    <span class="badge-code">SCHEMA: tenant_acme_corp</span>
+                    <p>Status: <span class="status-text green">● Healthy & Active</span></p>
+                  </div>
+                  <div class="tenant-box">
+                    <h4>🏛️ Enterprise Global</h4>
+                    <span class="badge-code">SCHEMA: tenant_enterprise_client</span>
+                    <p>Status: <span class="status-text green">● Healthy & Active</span></p>
+                  </div>
+                  <div class="tenant-box">
+                    <h4>🚀 Tokalink SaaS</h4>
+                    <span class="badge-code">SCHEMA: tenant_tokalink_saas</span>
+                    <p>Status: <span class="status-text green">● Healthy & Active</span></p>
+                  </div>
+                  <div class="tenant-box">
+                    <h4>💎 FinTech Labs</h4>
+                    <span class="badge-code">SCHEMA: tenant_fintech_ltd</span>
+                    <p>Status: <span class="status-text green">● Healthy & Active</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: RPC STUDIO -->
+          <div id="tab-rpc" class="tab-content">
+            <div class="grid-card glass-panel">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="pulse-icon">⚡</span>
+                  <h3>ConnectRPC Protocol Documentation & Testing</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="card-desc">TGo builds upon the Connect protocol, combining high-speed Protobuf binary encoding with clean JSON interoperability over standard HTTP/1.1 and HTTP/2.</p>
+                <div class="features-list">
+                  <div class="feature-item">
+                    <strong>Universal Client:</strong> Works natively with <code>fetch()</code>, curl, and native gRPC clients.
+                  </div>
+                  <div class="feature-item">
+                    <strong>Zero Code Bloat:</strong> Type-safe Go server stubs generated directly via <code>craft proto:gen</code>.
+                  </div>
+                  <div class="feature-item">
+                    <strong>Wails In-Memory IPC:</strong> Replaces browser HTTP roundtrips with direct 0.006ms memory transport in desktop builds.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: TEAM -->
+          <div id="tab-team" class="tab-content">
+            <div class="grid-card glass-panel">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="pulse-icon">👥</span>
+                  <h3>Tenant Team Directory</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="custom-table" id="team-table">
+                    <thead>
+                      <tr>
+                        <th>Member Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="team-tbody">
+                      <tr>
+                        <td colspan="4" class="text-center">Loading team members...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: DATABASE -->
+          <div id="tab-database" class="tab-content">
+            <div class="grid-card glass-panel">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="pulse-icon">🗄️</span>
+                  <h3>Multi-Tenant Migrations Engine</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="card-desc">Execute schema migrations across all active tenant schemas concurrently with atomic rollbacks.</p>
+                <div class="cli-snippet">
+                  <code>$ craft migrate:tenant --tenant=all</code>
+                </div>
+                <div class="status-summary">
+                  <p>All tenant schemas are up to date. Version: <code>20260925_001_initial_schema</code></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: SETTINGS -->
+          <div id="tab-settings" class="tab-content">
+            <div class="grid-card glass-panel">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="pulse-icon">⚙️</span>
+                  <h3>Tenant Configuration</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label>JWT Token Secret</label>
+                  <input type="text" class="form-control" value="••••••••••••••••••••••••••••••••" readonly />
+                </div>
+                <div class="form-group">
+                  <label>Schema Isolation Mode</label>
+                  <input type="text" class="form-control" value="PostgreSQL Schema Per Tenant" readonly />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
   </div>
+
   <script src="main.js"></script>
 </body>
 

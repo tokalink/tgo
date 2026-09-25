@@ -38,6 +38,10 @@ var ServeCmd = &cobra.Command{
 		path, handler := userconnect.NewUserServiceHandler(userHandler)
 		application.Server().Register(path, handler)
 
+		// Register REST Endpoints for Demo App
+		application.Server().Register("/api/auth/login", handlers.NewAuthHandler())
+		application.Server().Register("/api/dashboard/stats", handlers.NewDashboardHandler())
+
 		if err := application.Run(); err != nil {
 			log.Fatalf("[Craft] Application error: %v", err)
 		}
