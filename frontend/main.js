@@ -3,6 +3,7 @@ const state = {
   token: localStorage.getItem('tgo_jwt') || null,
   user: JSON.parse(localStorage.getItem('tgo_user') || 'null'),
   activeTenant: localStorage.getItem('tgo_tenant') || 'acme_corp',
+  appMode: localStorage.getItem('tgo_mode') || 'multi', // 'multi' or 'single'
   currentTab: 'overview'
 };
 
@@ -13,8 +14,23 @@ const loginForm = document.getElementById('login-form');
 const emailInput = document.getElementById('email-input');
 const passwordInput = document.getElementById('password-input');
 const tenantSelect = document.getElementById('tenant-select');
+const tenantFormGroup = document.getElementById('tenant-form-group');
+const quickFillMulti = document.getElementById('quick-fill-multi');
+const quickFillSingle = document.getElementById('quick-fill-single');
+const btnModeMulti = document.getElementById('btn-mode-multi');
+const btnModeSingle = document.getElementById('btn-mode-single');
 const btnLogout = document.getElementById('btn-logout');
 const activeTenantSwitch = document.getElementById('active-tenant-switch');
+const topbarTenantWrapper = document.getElementById('topbar-tenant-wrapper');
+const dashboardModeIndicator = document.getElementById('dashboard-mode-indicator');
+const dashboardModeText = document.getElementById('dashboard-mode-text');
+const brandModeTag = document.getElementById('brand-mode-tag');
+const navTenantsLabel = document.getElementById('nav-tenants-label');
+const architectureMultiPanel = document.getElementById('architecture-multi-panel');
+const architectureSinglePanel = document.getElementById('architecture-single-panel');
+const migrationCliSnippet = document.getElementById('migration-cli-snippet');
+const settingsArchMode = document.getElementById('settings-arch-mode');
+
 const userNameDisplay = document.getElementById('user-name-display');
 const userRoleDisplay = document.getElementById('user-role-display');
 const userAvatar = document.getElementById('user-avatar');
@@ -24,6 +40,8 @@ const topLatency = document.getElementById('top-latency');
 // Init Lifecycle
 document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
+  applyAuthMode(state.appMode);
+
   if (state.token && state.user) {
     showDashboard();
   } else {
@@ -32,12 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
+  // Mode Buttons on Login View
+  btnModeMulti.addEventListener('click', () => applyAuthMode('multi'));
+  btnModeSingle.addEventListener('click', () => applyAuthMode('single'));
+
   // Quick Fill Demo Credentials
   document.querySelectorAll('.quick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-mode');
       const tenant = btn.getAttribute('data-tenant');
       const email = btn.getAttribute('data-email');
-      tenantSelect.value = tenant;
+      
+      applyAuthMode(mode);
+      if (mode === 'multi') {
+        tenantSelect.value = tenant;
+      }
       emailInput.value = email;
       passwordInput.value = 'tgo-demo-password';
     });
@@ -48,7 +75,7 @@ function setupEventListeners() {
     e.preventDefault();
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
-    const tenant_slug = tenantSelect.value;
+    const tenant_slug = state.appMode === 'single' ? 'public' : tenantSelect.value;
 
     const btn = document.getElementById('btn-login');
     btn.querySelector('.btn-text').textContent = 'Authenticating...';
@@ -67,11 +94,12 @@ function setupEventListeners() {
       const data = await res.json();
       state.token = data.token;
       state.user = data.user;
-      state.activeTenant = data.user.tenant_slug || tenant_slug;
+      state.activeTenant = state.appMode === 'single' ? 'public' : (data.user.tenant_slug || tenant_slug);
 
       localStorage.setItem('tgo_jwt', state.token);
       localStorage.setItem('tgo_user', JSON.stringify(state.user));
       localStorage.setItem('tgo_tenant', state.activeTenant);
+      localStorage.setItem('tgo_mode', state.appMode);
 
       showDashboard();
     } catch (err) {
@@ -98,7 +126,7 @@ function setupEventListeners() {
     });
   });
 
-  // Active Tenant Switcher
+  // Active Tenant Switcher (Multi-Tenant Mode)
   activeTenantSwitch.addEventListener('change', (e) => {
     state.activeTenant = e.target.value;
     localStorage.setItem('tgo_tenant', state.activeTenant);
@@ -118,6 +146,27 @@ function setupEventListeners() {
   }
 }
 
+function applyAuthMode(mode) {
+  state.appMode = mode;
+  localStorage.setItem('tgo_mode', mode);
+
+  if (mode === 'single') {
+    btnModeSingle.classList.add('active');
+    btnModeMulti.classList.remove('active');
+    tenantFormGroup.classList.add('hidden');
+    quickFillMulti.classList.add('hidden');
+    quickFillSingle.classList.remove('hidden');
+    emailInput.value = 'admin@standalone.app';
+  } else {
+    btnModeMulti.classList.add('active');
+    btnModeSingle.classList.remove('active');
+    tenantFormGroup.classList.remove('hidden');
+    quickFillMulti.classList.remove('hidden');
+    quickFillSingle.classList.add('hidden');
+    emailInput.value = 'alex.chen@acme.com';
+  }
+}
+
 function showLogin() {
   loginView.classList.remove('hidden');
   dashboardView.classList.add('hidden');
@@ -127,10 +176,37 @@ function showDashboard() {
   loginView.classList.add('hidden');
   dashboardView.classList.remove('hidden');
 
+  const isSingle = state.appMode === 'single';
+
+  // Update UI components according to mode
+  if (isSingle) {
+    topbarTenantWrapper.classList.add('hidden');
+    dashboardModeText.textContent = '⚡ Single-Tenant (Standard)';
+    brandModeTag.textContent = 'Standard Monolith App';
+    navTenantsLabel.textContent = 'Architecture & DB';
+    architectureMultiPanel.classList.add('hidden');
+    architectureSinglePanel.classList.remove('hidden');
+    migrationCliSnippet.textContent = '$ craft migrate';
+    settingsArchMode.value = 'Standard Monolithic App (Single Database / Public Schema)';
+    state.activeTenant = 'public';
+  } else {
+    topbarTenantWrapper.classList.remove('hidden');
+    dashboardModeText.textContent = '🏢 Multi-Tenant SaaS';
+    brandModeTag.textContent = 'Multi-Tenant SaaS';
+    navTenantsLabel.textContent = 'Tenants & Isolation';
+    architectureMultiPanel.classList.remove('hidden');
+    architectureSinglePanel.classList.add('hidden');
+    migrationCliSnippet.textContent = '$ craft migrate:tenant --tenant=all';
+    settingsArchMode.value = 'Multi-Tenant SaaS (PostgreSQL Schema Isolation)';
+    if (state.activeTenant === 'public') {
+      state.activeTenant = 'acme_corp';
+    }
+  }
+
   // Populate user metadata
   if (state.user) {
     userNameDisplay.textContent = state.user.name || 'Admin User';
-    userRoleDisplay.textContent = `${state.user.role || 'Admin'} • ${state.activeTenant}`;
+    userRoleDisplay.textContent = isSingle ? 'Super Administrator • Single-Tenant' : `${state.user.role || 'Admin'} • ${state.activeTenant}`;
     const initials = (state.user.name || 'Admin').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     userAvatar.textContent = initials || 'TG';
   }
@@ -154,13 +230,14 @@ function switchTab(tabId) {
     activeContent.classList.add('active');
   }
 
+  const isSingle = state.appMode === 'single';
   const tabLabels = {
     overview: 'Dashboard Overview',
-    tenants: 'Tenants & Schema Isolation',
+    architecture: isSingle ? 'Single-Tenant Architecture' : 'Tenants & Schema Isolation',
     rpc: 'ConnectRPC Studio',
     team: 'Team Directory',
     database: 'Schema Migrations',
-    settings: 'Tenant Settings'
+    settings: 'System Configuration'
   };
 
   breadcrumbCurrent.textContent = tabLabels[tabId] || 'Dashboard';
@@ -168,14 +245,16 @@ function switchTab(tabId) {
 
 async function fetchDashboardStats() {
   const startTime = performance.now();
-  try {
-    const res = await fetch('/api/dashboard/stats', {
-      headers: {
-        'Authorization': `Bearer ${state.token}`,
-        'X-Tenant-Slug': state.activeTenant
-      }
-    });
+  const headers = {
+    'Authorization': `Bearer ${state.token}`
+  };
 
+  if (state.appMode === 'multi') {
+    headers['X-Tenant-Slug'] = state.activeTenant;
+  }
+
+  try {
+    const res = await fetch('/api/dashboard/stats', { headers });
     const duration = (performance.now() - startTime).toFixed(1);
     topLatency.textContent = `${duration} ms (ConnectRPC & DB)`;
 
@@ -186,7 +265,8 @@ async function fetchDashboardStats() {
     document.getElementById('stat-revenue').textContent = data.total_revenue || '$128,450.00';
     document.getElementById('stat-users').textContent = (data.active_users || 2840).toLocaleString();
     document.getElementById('stat-throughput').textContent = data.rpc_throughput || '172,500 req/s';
-    document.getElementById('stat-schema').textContent = data.schema_name || `tenant_${state.activeTenant}`;
+    document.getElementById('stat-schema').textContent = data.schema_name || (state.appMode === 'single' ? 'public (Default Schema)' : `tenant_${state.activeTenant}`);
+    document.getElementById('stat-schema-sub').textContent = data.db_isolation || (state.appMode === 'single' ? 'Standard Single Database' : 'PostgreSQL Schema Isolation');
 
     // Populate Activity Table
     const eventsTbody = document.getElementById('events-tbody');
@@ -229,15 +309,20 @@ async function callConnectRPC() {
   rpcTime.textContent = 'Calling...';
 
   const startTime = performance.now();
+  const headers = {
+    'Content-Type': 'application/json',
+    'Connect-Protocol-Version': '1',
+    'Authorization': `Bearer ${state.token}`
+  };
+
+  if (state.appMode === 'multi') {
+    headers['X-Tenant-Slug'] = state.activeTenant;
+  }
+
   try {
     const res = await fetch('/user.v1.UserService/GetProfile', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Connect-Protocol-Version': '1',
-        'X-Tenant-Slug': state.activeTenant,
-        'Authorization': `Bearer ${state.token}`
-      },
+      headers: headers,
       body: JSON.stringify({ user_id: userId })
     });
 

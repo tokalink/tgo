@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TGo Enterprise Platform</title>
+  <title>TGo Enterprise & Standard Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -18,14 +18,25 @@
       <div class="auth-card glass-panel">
         <div class="auth-header">
           <div class="brand-badge">
-            <span class="bolt">⚡</span> TGo Cloud
+            <span class="bolt">⚡</span> TGo Platform
           </div>
           <h1>Welcome Back</h1>
-          <p class="subtitle">Sign in to your high-performance multi-tenant workspace</p>
+          <p class="subtitle" id="auth-subtitle">Sign in to your high-performance workspace</p>
+
+          <!-- MODE SELECTOR PILL -->
+          <div class="mode-toggle-group">
+            <button type="button" class="mode-btn active" id="btn-mode-multi" data-mode="multi">
+              <span>🏢 Multi-Tenant (SaaS)</span>
+            </button>
+            <button type="button" class="mode-btn" id="btn-mode-single" data-mode="single">
+              <span>⚡ Non-Tenancy (Standard)</span>
+            </button>
+          </div>
         </div>
 
         <form id="login-form" class="auth-form">
-          <div class="form-group">
+          <!-- TENANT SELECTOR (HIDDEN IN SINGLE-TENANT MODE) -->
+          <div class="form-group" id="tenant-form-group">
             <label for="tenant-select">Tenant Organization</label>
             <select id="tenant-select" class="form-control">
               <option value="acme_corp">🏢 Acme Corporation (tenant_acme_corp)</option>
@@ -45,12 +56,21 @@
             <input type="password" id="password-input" class="form-control" placeholder="••••••••••••" value="tgo-demo-password" required />
           </div>
 
-          <div class="quick-fill-section">
-            <span class="quick-label">Quick Demo Login:</span>
+          <!-- QUICK DEMO LOGINS -->
+          <div class="quick-fill-section" id="quick-fill-multi">
+            <span class="quick-label">Quick Demo Logins (Multi-Tenant):</span>
             <div class="quick-tags">
-              <button type="button" class="quick-btn" data-tenant="acme_corp" data-email="alex.chen@acme.com">Acme Admin</button>
-              <button type="button" class="quick-btn" data-tenant="tokalink_saas" data-email="dev@tokalink.com">Tokalink Dev</button>
-              <button type="button" class="quick-btn" data-tenant="fintech_ltd" data-email="security@fintech.io">FinTech Security</button>
+              <button type="button" class="quick-btn" data-mode="multi" data-tenant="acme_corp" data-email="alex.chen@acme.com">Acme Admin</button>
+              <button type="button" class="quick-btn" data-mode="multi" data-tenant="tokalink_saas" data-email="dev@tokalink.com">Tokalink Dev</button>
+              <button type="button" class="quick-btn" data-mode="multi" data-tenant="fintech_ltd" data-email="security@fintech.io">FinTech Security</button>
+            </div>
+          </div>
+
+          <div class="quick-fill-section hidden" id="quick-fill-single">
+            <span class="quick-label">Quick Demo Logins (Non-Tenancy Standard):</span>
+            <div class="quick-tags">
+              <button type="button" class="quick-btn" data-mode="single" data-tenant="public" data-email="admin@standalone.app">Standard Super Admin</button>
+              <button type="button" class="quick-btn" data-mode="single" data-tenant="public" data-email="engineer@standalone.app">Core Developer</button>
             </div>
           </div>
 
@@ -61,7 +81,7 @@
         </form>
 
         <div class="auth-footer">
-          <span>TGo Framework v1.0 • ConnectRPC & Multi-Tenant Native</span>
+          <span>TGo Framework v1.0 • ConnectRPC & Multi-Tenant / Single-Tenant Dual Architecture</span>
         </div>
       </div>
     </div>
@@ -74,8 +94,8 @@
           <div class="brand">
             <span class="logo-icon">⚡</span>
             <div class="brand-text">
-              <span class="brand-name">TGo Enterprise</span>
-              <span class="brand-version">v1.0 Go Core</span>
+              <span class="brand-name">TGo Platform</span>
+              <span class="brand-version" id="brand-mode-tag">Multi-Tenant SaaS</span>
             </div>
           </div>
         </div>
@@ -86,9 +106,9 @@
             <span class="nav-icon">📊</span>
             <span>Dashboard</span>
           </button>
-          <button class="nav-item" data-tab="tenants">
+          <button class="nav-item" data-tab="architecture">
             <span class="nav-icon">🏢</span>
-            <span>Tenants & Isolation</span>
+            <span id="nav-tenants-label">Tenants & Isolation</span>
           </button>
           <button class="nav-item" data-tab="rpc">
             <span class="nav-icon">⚡</span>
@@ -137,7 +157,14 @@
           </div>
 
           <div class="topbar-right">
-            <div class="tenant-switcher">
+            <!-- MODE BADGE / TOGGLE -->
+            <div class="mode-badge-pill" id="dashboard-mode-indicator">
+              <span class="mode-dot"></span>
+              <span id="dashboard-mode-text">Multi-Tenant Mode</span>
+            </div>
+
+            <!-- TENANT SWITCHER (ONLY IN MULTI-TENANT MODE) -->
+            <div class="tenant-switcher" id="topbar-tenant-wrapper">
               <span class="switcher-label">Active Tenant:</span>
               <select id="active-tenant-switch" class="top-tenant-select">
                 <option value="acme_corp">🏢 acme_corp</option>
@@ -163,7 +190,7 @@
               <div class="stat-card glass-panel">
                 <div class="stat-icon revenue-bg">💰</div>
                 <div class="stat-info">
-                  <span class="stat-label">Tenant ARR Revenue</span>
+                  <span class="stat-label" id="card-revenue-label">ARR Revenue</span>
                   <div class="stat-value" id="stat-revenue">$128,450.00</div>
                   <div class="stat-sub positive">↑ +14.2% vs last month</div>
                 </div>
@@ -190,9 +217,9 @@
               <div class="stat-card glass-panel">
                 <div class="stat-icon schema-bg">🔒</div>
                 <div class="stat-info">
-                  <span class="stat-label">Active DB Isolation</span>
+                  <span class="stat-label">Active DB Target</span>
                   <div class="stat-value highlight" id="stat-schema">tenant_acme_corp</div>
-                  <div class="stat-sub neutral">PostgreSQL Schema Isolation</div>
+                  <div class="stat-sub neutral" id="stat-schema-sub">PostgreSQL Schema Isolation</div>
                 </div>
               </div>
             </div>
@@ -209,7 +236,7 @@
                   <span class="tag-pill">HTTP/2 • Protobuf • JSON</span>
                 </div>
                 <div class="card-body">
-                  <p class="card-desc">Execute an in-memory or HTTP/2 RPC call against <code>user.v1.UserService/GetProfile</code> with your authenticated tenant context.</p>
+                  <p class="card-desc">Execute an in-memory or HTTP/2 RPC call against <code>user.v1.UserService/GetProfile</code> with your current session context.</p>
                   
                   <div class="rpc-controls">
                     <div class="rpc-input-group">
@@ -243,7 +270,7 @@
                 <div class="card-header">
                   <div class="card-title">
                     <span class="pulse-icon">📋</span>
-                    <h3>Tenant Activity Log</h3>
+                    <h3>Activity Log</h3>
                   </div>
                   <button id="btn-refresh-stats" class="btn-icon-small" title="Refresh Data">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
@@ -256,14 +283,14 @@
                         <tr>
                           <th>Event ID</th>
                           <th>Action</th>
-                          <th>Tenant Scope</th>
+                          <th>Scope</th>
                           <th>Time</th>
                           <th>Status</th>
                         </tr>
                       </thead>
                       <tbody id="events-tbody">
                         <tr>
-                          <td colspan="5" class="text-center">Loading tenant activity...</td>
+                          <td colspan="5" class="text-center">Loading activity...</td>
                         </tr>
                       </tbody>
                     </table>
@@ -273,9 +300,9 @@
             </div>
           </div>
 
-          <!-- TAB: TENANTS -->
-          <div id="tab-tenants" class="tab-content">
-            <div class="grid-card glass-panel">
+          <!-- TAB: ARCHITECTURE (TENANTS & ISOLATION OR SINGLE-TENANT VIEW) -->
+          <div id="tab-architecture" class="tab-content">
+            <div class="grid-card glass-panel" id="architecture-multi-panel">
               <div class="card-header">
                 <div class="card-title">
                   <span class="pulse-icon">🏢</span>
@@ -334,6 +361,44 @@
                 </div>
               </div>
             </div>
+
+            <!-- SINGLE TENANT ARCHITECTURE VIEW -->
+            <div class="grid-card glass-panel hidden" id="architecture-single-panel">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="pulse-icon">⚡</span>
+                  <h3>Non-Tenancy (Standard Standalone & Monolithic Mode)</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="card-desc">In standard / non-tenancy mode, TGo operates as a high-performance single-database application without multi-tenant header overhead. Ideal for internal corporate tools, standalone apps, and desktop distribution.</p>
+                <div class="architecture-flow">
+                  <div class="flow-step">
+                    <span class="step-num">1</span>
+                    <div class="step-content">
+                      <strong>Direct ConnectRPC Route</strong>
+                      <p>Requests route directly without tenant resolution middleware</p>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">➔</div>
+                  <div class="flow-step">
+                    <span class="step-num">2</span>
+                    <div class="step-content">
+                      <strong>Default Database Pool</strong>
+                      <p>Queries execute against standard <code>public</code> schema or local SQLite</p>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">➔</div>
+                  <div class="flow-step">
+                    <span class="step-num">3</span>
+                    <div class="step-content">
+                      <strong>Maximum Speed</strong>
+                      <p>Zero switching latency, raw Go performance with 170k+ req/s throughput</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- TAB: RPC STUDIO -->
@@ -368,7 +433,7 @@
               <div class="card-header">
                 <div class="card-title">
                   <span class="pulse-icon">👥</span>
-                  <h3>Tenant Team Directory</h3>
+                  <h3>Team Directory</h3>
                 </div>
               </div>
               <div class="card-body">
@@ -399,16 +464,16 @@
               <div class="card-header">
                 <div class="card-title">
                   <span class="pulse-icon">🗄️</span>
-                  <h3>Multi-Tenant Migrations Engine</h3>
+                  <h3>Database & Schema Migrations</h3>
                 </div>
               </div>
               <div class="card-body">
-                <p class="card-desc">Execute schema migrations across all active tenant schemas concurrently with atomic rollbacks.</p>
+                <p class="card-desc">Execute schema migrations with Craft CLI. Supports both single-database and concurrent multi-tenant schemas.</p>
                 <div class="cli-snippet">
-                  <code>$ craft migrate:tenant --tenant=all</code>
+                  <code id="migration-cli-snippet">$ craft migrate</code>
                 </div>
                 <div class="status-summary">
-                  <p>All tenant schemas are up to date. Version: <code>20260925_001_initial_schema</code></p>
+                  <p>Database schema is up to date. Version: <code>20260925_001_initial_schema</code></p>
                 </div>
               </div>
             </div>
@@ -420,17 +485,21 @@
               <div class="card-header">
                 <div class="card-title">
                   <span class="pulse-icon">⚙️</span>
-                  <h3>Tenant Configuration</h3>
+                  <h3>System Configuration</h3>
                 </div>
               </div>
               <div class="card-body">
+                <div class="form-group">
+                  <label>Current Application Architecture</label>
+                  <input type="text" id="settings-arch-mode" class="form-control" value="Multi-Tenant SaaS (PostgreSQL Schema Isolation)" readonly />
+                </div>
                 <div class="form-group">
                   <label>JWT Token Secret</label>
                   <input type="text" class="form-control" value="••••••••••••••••••••••••••••••••" readonly />
                 </div>
                 <div class="form-group">
-                  <label>Schema Isolation Mode</label>
-                  <input type="text" class="form-control" value="PostgreSQL Schema Per Tenant" readonly />
+                  <label>Transport Layer</label>
+                  <input type="text" class="form-control" value="ConnectRPC / HTTP/2 + Wails In-Memory IPC" readonly />
                 </div>
               </div>
             </div>

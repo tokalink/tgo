@@ -16,19 +16,29 @@ func NewDashboardHandler() *DashboardHandler {
 
 func (h *DashboardHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tenant := middleware.GetTenant(r.Context())
-	if tenant == "" {
+	isSingleTenant := tenant == "public" || tenant == "single" || tenant == "none" || tenant == ""
+
+	schemaName := fmt.Sprintf("tenant_%s", tenant)
+	dbIsolation := "PostgreSQL Schema & SQLite File-Per-Tenant"
+	modeName := "Multi-Tenant (SaaS Isolation)"
+	if isSingleTenant {
+		schemaName = "public (Default Standard Schema)"
+		dbIsolation = "Standard Single Database (Monolith / Desktop Mode)"
+		modeName = "Single-Tenant (Standard App)"
 		tenant = "public"
 	}
 
 	stats := map[string]interface{}{
+		"mode":            modeName,
+		"is_single_tenant": isSingleTenant,
 		"tenant":          tenant,
-		"schema_name":     fmt.Sprintf("tenant_%s", tenant),
-		"db_isolation":    "PostgreSQL Schema & SQLite File-Per-Tenant",
+		"schema_name":     schemaName,
+		"db_isolation":    dbIsolation,
 		"total_revenue":   "$128,450.00",
 		"active_users":    2840,
 		"rpc_throughput":  "172,500 req/s",
 		"uptime":          "99.99%",
-		"server_latency":  "0.6 ms (In-Memory IPC: 0.006 ms)",
+		"server_latency":  "0.4 ms (In-Memory IPC: 0.006 ms)",
 		"status":          "Healthy",
 		"available_tenants": []string{
 			"acme_corp",
@@ -38,15 +48,15 @@ func (h *DashboardHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			"public",
 		},
 		"recent_activity": []map[string]string{
-			{"id": "EVT-101", "event": "RPC Call: UserService/GetProfile", "tenant": tenant, "time": "Just now", "status": "200 OK"},
-			{"id": "EVT-102", "event": "Schema Migrated: users_table", "tenant": tenant, "time": "2 mins ago", "status": "Applied"},
-			{"id": "EVT-103", "event": "JWT Token Issued", "tenant": tenant, "time": "5 mins ago", "status": "Success"},
-			{"id": "EVT-104", "event": "Tenant Isolation Ping", "tenant": tenant, "time": "12 mins ago", "status": "Verified"},
+			{"id": "EVT-101", "event": "ConnectRPC Call: UserService/GetProfile", "tenant": tenant, "time": "Just now", "status": "200 OK"},
+			{"id": "EVT-102", "event": "DB Query executed on " + schemaName, "tenant": tenant, "time": "2 mins ago", "status": "Success"},
+			{"id": "EVT-103", "event": "JWT Session Verified", "tenant": tenant, "time": "5 mins ago", "status": "Success"},
+			{"id": "EVT-104", "event": "HTTP/2 Health Check", "tenant": tenant, "time": "12 mins ago", "status": "Healthy"},
 		},
 		"team_members": []map[string]string{
-			{"name": "Budi Santoso", "email": "budi@" + tenant + ".example.com", "role": "Owner / Admin", "status": "Active"},
-			{"name": "Siti Rahma", "email": "siti@" + tenant + ".example.com", "role": "Backend Engineer", "status": "Active"},
-			{"name": "Alex Chen", "email": "alex@" + tenant + ".example.com", "role": "Product Manager", "status": "Active"},
+			{"name": "Budi Santoso", "email": "budi@example.com", "role": "Super Admin", "status": "Active"},
+			{"name": "Siti Rahma", "email": "siti@example.com", "role": "Lead Architect", "status": "Active"},
+			{"name": "Alex Chen", "email": "alex@example.com", "role": "Software Engineer", "status": "Active"},
 		},
 	}
 

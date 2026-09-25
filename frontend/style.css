@@ -62,14 +62,14 @@ code, pre {
 
 .auth-card {
   width: 100%;
-  max-width: 460px;
+  max-width: 480px;
   padding: 2.5rem;
   animation: fadeIn 0.4s ease-out;
 }
 
 .auth-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .brand-badge {
@@ -84,26 +84,61 @@ code, pre {
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .auth-header h1 {
   font-size: 1.85rem;
   font-weight: 700;
   color: var(--text-main);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .subtitle {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   line-height: 1.4;
+  margin-bottom: 1.25rem;
+}
+
+/* MODE TOGGLE GROUP */
+.mode-toggle-group {
+  display: flex;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  gap: 4px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  color: var(--text-main);
+}
+
+.mode-btn.active {
+  background: rgba(56, 189, 248, 0.18);
+  color: var(--accent-cyan);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
+  margin-top: 1.25rem;
 }
 
 .form-group {
@@ -194,7 +229,7 @@ code, pre {
 }
 
 .auth-footer {
-  margin-top: 2rem;
+  margin-top: 1.75rem;
   text-align: center;
   font-size: 0.75rem;
   color: var(--text-dim);
@@ -417,6 +452,26 @@ code, pre {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.mode-badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.mode-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #818cf8;
 }
 
 .tenant-switcher {

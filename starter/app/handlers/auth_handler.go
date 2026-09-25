@@ -52,8 +52,12 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tenant := strings.TrimSpace(req.TenantSlug)
-	if tenant == "" {
+	isSingleTenant := tenant == "single" || tenant == "none" || tenant == "public"
+	if tenant == "" && !isSingleTenant {
 		tenant = "acme_corp"
+	}
+	if isSingleTenant {
+		tenant = "public"
 	}
 
 	// Generate standard JWT mock payload for demo
